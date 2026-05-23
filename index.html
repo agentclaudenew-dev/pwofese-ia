@@ -85,7 +85,6 @@
 
   <a-box position="0 0.4 -3.5" width="2.5"
          height="0.08" depth="1" color="#5C3317"></a-box>
-
   <a-box position="0 1.2 -3.5" width="0.5"
          height="0.8" depth="0.3" color="#1a1a6e"></a-box>
   <a-sphere position="0 1.85 -3.5" radius="0.22"
@@ -116,8 +115,17 @@
 </a-scene>
 
 <script>
-const CLE_API = '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';
-const historique = [];
+const CLE_API = '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';
+const historique = [
+  {
+    role: 'system',
+    content: `Ou se yon pwofesè matematik ki trè pasyans ak ankourajan pou adilt ayisyen.
+Reponn toujou an kreyòl ayisyen oswa an fransè selon lang elèv la itilize.
+Eksplike matematik senp, klè, ak egzanp pratik nan lavi chak jou ann Ayiti.
+Reponn kout (maksimòm 3 fraz) epi itilize chif senp.
+Si elèv la paka konprann, eksplike yon lòt fason.`
+  }
+];
 
 const tableauQuestion = document.getElementById('tableau-question');
 const tableauReponse  = document.getElementById('tableau-reponse');
@@ -135,22 +143,15 @@ async function envoyerQuestion(texte) {
   historique.push({ role: 'user', content: texte });
 
   try {
-    const reponse = await fetch('https://api.anthropic.com/v1/messages', {
+    const reponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': CLE_API,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Authorization': 'Bearer ' + CLE_API
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'gpt-4o',
         max_tokens: 300,
-        system: `Ou se yon pwofesè matematik ki trè pasyans ak ankourajan pou adilt ayisyen.
-Reponn toujou an kreyòl ayisyen oswa an fransè selon lang elèv la itilize.
-Eksplike matematik senp, klè, ak egzanp pratik nan lavi chak jou ann Ayiti.
-Reponn kout (maksimòm 3 fraz) epi itilize chif senp.
-Si elèv la paka konprann, eksplike yon lòt fason.`,
         messages: historique
       })
     });
@@ -165,7 +166,7 @@ Si elèv la paka konprann, eksplike yon lòt fason.`,
     }
 
     const data = await reponse.json();
-    const texteReponse = data.content[0].text;
+    const texteReponse = data.choices[0].message.content;
 
     historique.push({ role: 'assistant', content: texteReponse });
     tableauReponse.setAttribute('value', texteReponse);
@@ -180,8 +181,7 @@ Si elèv la paka konprann, eksplike yon lòt fason.`,
 
   } catch (err) {
     console.error('Erreur réseau:', err);
-    tableauReponse.setAttribute('value',
-      'Erè rezo: ' + err.message);
+    tableauReponse.setAttribute('value', 'Erè rezo: ' + err.message);
   }
 
   status.style.display = 'none';
