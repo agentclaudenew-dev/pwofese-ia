@@ -1,89 +1,234 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Pwofesè IA - Matematik</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  </head>
-  <body>
-    <a-scene background="color: #87CEEB">
+<head>
+  <meta charset="utf-8"/>
+  <title>Pwofesè IA - Matematik</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <style>
+    #ui {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.85);
+      padding: 16px; display: flex; gap: 10px;
+      align-items: center; z-index: 999;
+    }
+    #question {
+      flex: 1; padding: 12px; font-size: 16px;
+      border-radius: 8px; border: none;
+      background: #1a1a1a; color: white;
+    }
+    #btn-envoyer {
+      padding: 12px 20px; background: #003087;
+      color: white; border: none; border-radius: 8px;
+      font-size: 15px; cursor: pointer;
+    }
+    #btn-micro {
+      padding: 12px 16px; background: #D21034;
+      color: white; border: none; border-radius: 8px;
+      font-size: 20px; cursor: pointer;
+    }
+    #btn-envoyer:hover { background: #0044cc; }
+    #status {
+      position: fixed; top: 16px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: #00FF00; padding: 8px 20px;
+      border-radius: 20px; font-size: 14px;
+      z-index: 999; display: none;
+    }
+  </style>
+</head>
+<body>
 
-      <!-- Sol parquet -->
-      <a-plane position="0 0 0" rotation="-90 0 0"
-               width="12" height="12" color="#8B4513"></a-plane>
+<div id="status">Pwofesè ap réfléchi...</div>
 
-      <!-- Mur du fond -->
-      <a-box position="0 2.5 -5" width="12" height="5"
-             depth="0.1" color="#003087"></a-box>
+<!-- Interface de conversation -->
+<div id="ui">
+  <button id="btn-micro" title="Pale ak mikwo">🎤</button>
+  <input id="question" type="text"
+    placeholder="Poze pwofesè a yon kesyon matematik... (ex: Ki sa ki fraksyon?)"/>
+  <button id="btn-envoyer">Voye ➤</button>
+</div>
 
-      <!-- Mur gauche -->
-      <a-box position="-6 2.5 0" rotation="0 90 0"
-             width="12" height="5" depth="0.1" color="#003087"></a-box>
+<!-- Scène VR -->
+<a-scene background="color: #87CEEB">
 
-      <!-- Mur droit -->
-      <a-box position="6 2.5 0" rotation="0 90 0"
-             width="12" height="5" depth="0.1" color="#003087"></a-box>
+  <!-- Sol -->
+  <a-plane position="0 0 0" rotation="-90 0 0"
+           width="12" height="12" color="#8B4513"></a-plane>
 
-      <!-- Plafond -->
-      <a-plane position="0 5 0" rotation="90 0 0"
-               width="12" height="12" color="#D21034"></a-plane>
+  <!-- Mur fond -->
+  <a-box position="0 2.5 -5" width="12"
+         height="5" depth="0.1" color="#003087"></a-box>
 
-      <!-- Tableau noir grand -->
-      <a-box position="0 2.5 -4.9" width="6" height="3"
-             depth="0.05" color="#1a1a1a"></a-box>
+  <!-- Mur gauche -->
+  <a-box position="-6 2.5 0" rotation="0 90 0"
+         width="12" height="5" depth="0.1" color="#003087"></a-box>
 
-      <!-- Titre tableau -->
-      <a-text value="Pwofese IA - Matematik"
-              position="-2.5 3.7 -4.8"
-              color="#FFFF00" width="5"></a-text>
+  <!-- Mur droit -->
+  <a-box position="6 2.5 0" rotation="0 90 0"
+         width="12" height="5" depth="0.1" color="#003087"></a-box>
 
-      <!-- Lecon 1 : Addition -->
-      <a-text value="Leson 1 : Adisyon\n\n25 + 37 = ?\n\nRepons : 62\n\n25 + 37 = 20 + 30 + 5 + 7\n       = 50 + 12 = 62"
-              position="-2.5 3.2 -4.8"
-              color="#00FF00" width="5"></a-text>
+  <!-- Plafond -->
+  <a-plane position="0 5 0" rotation="90 0 0"
+           width="12" height="12" color="#D21034"></a-plane>
 
-      <!-- Bureau professeur -->
-      <a-box position="0 0.4 -3.5" width="2.5"
-             height="0.08" depth="1" color="#5C3317"></a-box>
-      <a-box position="-1 0.2 -3.5" width="0.1"
-             height="0.4" depth="0.8" color="#5C3317"></a-box>
-      <a-box position="1 0.2 -3.5" width="0.1"
-             height="0.4" depth="0.8" color="#5C3317"></a-box>
+  <!-- Tableau noir -->
+  <a-box position="0 2.8 -4.9" width="7"
+         height="3.5" depth="0.05" color="#111111"></a-box>
 
-      <!-- Drapeau Haiti -->
-      <a-box position="0.05 3 -4.85" width="0.05"
-             height="1.5" depth="0.05" color="#888888"></a-box>
-      <a-box position="0.55 3.5 -4.85" width="1"
-             height="0.35" depth="0.02" color="#003087"></a-box>
-      <a-box position="0.55 3.15 -4.85" width="1"
-             height="0.35" depth="0.02" color="#D21034"></a-box>
+  <!-- Texte question sur tableau -->
+  <a-text id="tableau-question"
+          value="Poze yon kesyon matematik..."
+          position="-3.2 4.2 -4.8"
+          color="#FFFF00" width="6.5"></a-text>
 
-      <!-- Fenetres -->
-      <a-box position="-5.9 3 -2" rotation="0 90 0"
-             width="1.5" height="1.5" depth="0.05" color="#87CEEB"></a-box>
-      <a-box position="-5.9 3 2" rotation="0 90 0"
-             width="1.5" height="1.5" depth="0.05" color="#87CEEB"></a-box>
+  <!-- Texte réponse IA sur tableau -->
+  <a-text id="tableau-reponse"
+          value="Pwofese IA pral reponn ou..."
+          position="-3.2 3.5 -4.8"
+          color="#00FF00" width="6.5"
+          wrap-count="40"></a-text>
 
-      <!-- Chaises et bureaux eleves -->
-      <a-box position="-2 0.4 0" width="1.2"
-             height="0.06" depth="0.8" color="#8B4513"></a-box>
-      <a-box position="2 0.4 0" width="1.2"
-             height="0.06" depth="0.8" color="#8B4513"></a-box>
-      <a-box position="-2 0.4 2" width="1.2"
-             height="0.06" depth="0.8" color="#8B4513"></a-box>
-      <a-box position="2 0.4 2" width="1.2"
-             height="0.06" depth="0.8" color="#8B4513"></a-box>
+  <!-- Drapeau Haïti -->
+  <a-box position="0.05 3.2 -4.85" width="0.05"
+         height="1.8" depth="0.05" color="#888888"></a-box>
+  <a-box position="0.55 3.7 -4.85" width="1"
+         height="0.35" depth="0.02" color="#003087"></a-box>
+  <a-box position="0.55 3.35 -4.85" width="1"
+         height="0.35" depth="0.02" color="#D21034"></a-box>
 
-      <!-- Lumiere -->
-      <a-light type="ambient" intensity="0.6"></a-light>
-      <a-light type="point" position="0 4 0"
-               intensity="0.8" color="#ffffff"></a-light>
+  <!-- Bureau professeur -->
+  <a-box position="0 0.4 -3.5" width="2.5"
+         height="0.08" depth="1" color="#5C3317"></a-box>
 
-      <!-- Camera eleve -->
-      <a-camera position="0 1.6 4" wasd-controls="enabled:true">
-        <a-cursor color="#FFFF00"></a-cursor>
-      </a-camera>
+  <!-- Avatar professeur simple -->
+  <!-- Corps -->
+  <a-box position="0 1.2 -3.5" width="0.5"
+         height="0.8" depth="0.3" color="#1a1a6e"></a-box>
+  <!-- Tête -->
+  <a-sphere position="0 1.85 -3.5" radius="0.22"
+            color="#D2955A"></a-sphere>
 
-    </a-scene>
-  </body>
+  <!-- Bureaux élèves -->
+  <a-box position="-2 0.4 0" width="1.2"
+         height="0.06" depth="0.8" color="#8B4513"></a-box>
+  <a-box position="2 0.4 0" width="1.2"
+         height="0.06" depth="0.8" color="#8B4513"></a-box>
+  <a-box position="-2 0.4 2" width="1.2"
+         height="0.06" depth="0.8" color="#8B4513"></a-box>
+  <a-box position="2 0.4 2" width="1.2"
+         height="0.06" depth="0.8" color="#8B4513"></a-box>
+
+  <!-- Fenêtres -->
+  <a-box position="-5.9 3 -1" rotation="0 90 0"
+         width="1.5" height="1.5" depth="0.05" color="#87CEEB"></a-box>
+  <a-box position="-5.9 3 2" rotation="0 90 0"
+         width="1.5" height="1.5" depth="0.05" color="#87CEEB"></a-box>
+
+  <!-- Lumières -->
+  <a-light type="ambient" intensity="0.6"></a-light>
+  <a-light type="point" position="0 4.5 0"
+           intensity="0.8" color="#ffffff"></a-light>
+
+  <!-- Caméra -->
+  <a-camera position="0 1.6 4" wasd-controls="enabled:true">
+    <a-cursor color="#FFFF00"></a-cursor>
+  </a-camera>
+
+</a-scene>
+
+<script>
+  const CLE_API = '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';
+  const historique = [];
+
+  const tableauQuestion = document.getElementById('tableau-question');
+  const tableauReponse  = document.getElementById('tableau-reponse');
+  const inputQuestion   = document.getElementById('question');
+  const status          = document.getElementById('status');
+
+  async function envoyerQuestion(texte) {
+    if (!texte.trim()) return;
+
+    tableauQuestion.setAttribute('value', 'Kesyon : ' + texte);
+    tableauReponse.setAttribute('value', 'Pwofese ap réfléchi...');
+    status.style.display = 'block';
+    inputQuestion.value = '';
+
+    historique.push({ role: 'user', content: texte });
+
+    try {
+      const reponse = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': CLE_API,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 300,
+          system: `Ou se yon pwofesè matematik ki trè pasyans ak ankourajan pou adilt ayisyen.
+Reponn toujou an kreyòl ayisyen oswa an fransè selon lang elèv la itilize.
+Eksplike matematik senp, klè, ak egzanp pratik nan lavi chak jou ann Ayiti.
+Reponn kout (maksimòm 3 fraz) epi itilize chif senp.
+Si elèv la paka konprann, eksplike yon lòt fason.`,
+          messages: historique
+        })
+      });
+
+      const data = await reponse.json();
+      const texteReponse = data.content[0].text;
+
+      historique.push({ role: 'assistant', content: texteReponse });
+      tableauReponse.setAttribute('value', texteReponse);
+
+      // Voix du professeur
+      const voix = new SpeechSynthesisUtterance(texteReponse);
+      voix.lang = 'fr-FR';
+      voix.rate = 0.9;
+      window.speechSynthesis.speak(voix);
+
+    } catch (err) {
+      tableauReponse.setAttribute('value', 'Erè koneksyon. Eseye ankò.');
+      console.error(err);
+    }
+
+    status.style.display = 'none';
+  }
+
+  // Bouton envoyer
+  document.getElementById('btn-envoyer').addEventListener('click', () => {
+    envoyerQuestion(inputQuestion.value);
+  });
+
+  // Touche Enter
+  inputQuestion.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') envoyerQuestion(inputQuestion.value);
+  });
+
+  // Microphone
+  document.getElementById('btn-micro').addEventListener('click', () => {
+    const SpeechRecognition = window.SpeechRecognition
+                           || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Mikwo pa disponib nan navigatè sa a.');
+      return;
+    }
+    const recog = new SpeechRecognition();
+    recog.lang = 'fr-FR';
+    recog.start();
+    document.getElementById('btn-micro').textContent = '🔴';
+    recog.onresult = (e) => {
+      const texte = e.results[0][0].transcript;
+      inputQuestion.value = texte;
+      envoyerQuestion(texte);
+    };
+    recog.onend = () => {
+      document.getElementById('btn-micro').textContent = '🎤';
+    };
+  });
+</script>
+
+</body>
 </html>
