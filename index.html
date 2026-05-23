@@ -26,7 +26,6 @@
       color: white; border: none; border-radius: 8px;
       font-size: 20px; cursor: pointer;
     }
-    #btn-envoyer:hover { background: #0044cc; }
     #status {
       position: fixed; top: 16px; left: 50%;
       transform: translateX(-50%);
@@ -41,55 +40,42 @@
 
 <div id="status">Pwofesè ap réfléchi...</div>
 
-<!-- Interface de conversation -->
 <div id="ui">
-  <button id="btn-micro" title="Pale ak mikwo">🎤</button>
+  <button id="btn-micro">🎤</button>
   <input id="question" type="text"
-    placeholder="Poze pwofesè a yon kesyon matematik... (ex: Ki sa ki fraksyon?)"/>
+    placeholder="Poze pwofesè a yon kesyon matematik..."/>
   <button id="btn-envoyer">Voye ➤</button>
 </div>
 
-<!-- Scène VR -->
 <a-scene background="color: #87CEEB">
 
-  <!-- Sol -->
   <a-plane position="0 0 0" rotation="-90 0 0"
            width="12" height="12" color="#8B4513"></a-plane>
 
-  <!-- Mur fond -->
   <a-box position="0 2.5 -5" width="12"
          height="5" depth="0.1" color="#003087"></a-box>
-
-  <!-- Mur gauche -->
   <a-box position="-6 2.5 0" rotation="0 90 0"
          width="12" height="5" depth="0.1" color="#003087"></a-box>
-
-  <!-- Mur droit -->
   <a-box position="6 2.5 0" rotation="0 90 0"
          width="12" height="5" depth="0.1" color="#003087"></a-box>
 
-  <!-- Plafond -->
   <a-plane position="0 5 0" rotation="90 0 0"
            width="12" height="12" color="#D21034"></a-plane>
 
-  <!-- Tableau noir -->
   <a-box position="0 2.8 -4.9" width="7"
          height="3.5" depth="0.05" color="#111111"></a-box>
 
-  <!-- Texte question sur tableau -->
   <a-text id="tableau-question"
           value="Poze yon kesyon matematik..."
           position="-3.2 4.2 -4.8"
           color="#FFFF00" width="6.5"></a-text>
 
-  <!-- Texte réponse IA sur tableau -->
   <a-text id="tableau-reponse"
           value="Pwofese IA pral reponn ou..."
           position="-3.2 3.5 -4.8"
           color="#00FF00" width="6.5"
           wrap-count="40"></a-text>
 
-  <!-- Drapeau Haïti -->
   <a-box position="0.05 3.2 -4.85" width="0.05"
          height="1.8" depth="0.05" color="#888888"></a-box>
   <a-box position="0.55 3.7 -4.85" width="1"
@@ -97,19 +83,14 @@
   <a-box position="0.55 3.35 -4.85" width="1"
          height="0.35" depth="0.02" color="#D21034"></a-box>
 
-  <!-- Bureau professeur -->
   <a-box position="0 0.4 -3.5" width="2.5"
          height="0.08" depth="1" color="#5C3317"></a-box>
 
-  <!-- Avatar professeur simple -->
-  <!-- Corps -->
   <a-box position="0 1.2 -3.5" width="0.5"
          height="0.8" depth="0.3" color="#1a1a6e"></a-box>
-  <!-- Tête -->
   <a-sphere position="0 1.85 -3.5" radius="0.22"
             color="#D2955A"></a-sphere>
 
-  <!-- Bureaux élèves -->
   <a-box position="-2 0.4 0" width="1.2"
          height="0.06" depth="0.8" color="#8B4513"></a-box>
   <a-box position="2 0.4 0" width="1.2"
@@ -119,18 +100,15 @@
   <a-box position="2 0.4 2" width="1.2"
          height="0.06" depth="0.8" color="#8B4513"></a-box>
 
-  <!-- Fenêtres -->
   <a-box position="-5.9 3 -1" rotation="0 90 0"
          width="1.5" height="1.5" depth="0.05" color="#87CEEB"></a-box>
   <a-box position="-5.9 3 2" rotation="0 90 0"
          width="1.5" height="1.5" depth="0.05" color="#87CEEB"></a-box>
 
-  <!-- Lumières -->
   <a-light type="ambient" intensity="0.6"></a-light>
   <a-light type="point" position="0 4.5 0"
            intensity="0.8" color="#ffffff"></a-light>
 
-  <!-- Caméra -->
   <a-camera position="0 1.6 4" wasd-controls="enabled:true">
     <a-cursor color="#FFFF00"></a-cursor>
   </a-camera>
@@ -138,96 +116,104 @@
 </a-scene>
 
 <script>
-  const CLE_API = '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';
-  const historique = [];
+const CLE_API = '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';
+const historique = [];
 
-  const tableauQuestion = document.getElementById('tableau-question');
-  const tableauReponse  = document.getElementById('tableau-reponse');
-  const inputQuestion   = document.getElementById('question');
-  const status          = document.getElementById('status');
+const tableauQuestion = document.getElementById('tableau-question');
+const tableauReponse  = document.getElementById('tableau-reponse');
+const inputQuestion   = document.getElementById('question');
+const status          = document.getElementById('status');
 
-  async function envoyerQuestion(texte) {
-    if (!texte.trim()) return;
+async function envoyerQuestion(texte) {
+  if (!texte.trim()) return;
 
-    tableauQuestion.setAttribute('value', 'Kesyon : ' + texte);
-    tableauReponse.setAttribute('value', 'Pwofese ap réfléchi...');
-    status.style.display = 'block';
-    inputQuestion.value = '';
+  tableauQuestion.setAttribute('value', 'Kesyon : ' + texte);
+  tableauReponse.setAttribute('value', 'Pwofese ap réfléchi...');
+  status.style.display = 'block';
+  inputQuestion.value = '';
 
-    historique.push({ role: 'user', content: texte });
+  historique.push({ role: 'user', content: texte });
 
-    try {
-     const reponse = await fetch('https://corsproxy.io/?https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': CLE_API,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 300,
-          system: `Ou se yon pwofesè matematik ki trè pasyans ak ankourajan pou adilt ayisyen.
+  try {
+    const reponse = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLE_API,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: `Ou se yon pwofesè matematik ki trè pasyans ak ankourajan pou adilt ayisyen.
 Reponn toujou an kreyòl ayisyen oswa an fransè selon lang elèv la itilize.
 Eksplike matematik senp, klè, ak egzanp pratik nan lavi chak jou ann Ayiti.
 Reponn kout (maksimòm 3 fraz) epi itilize chif senp.
 Si elèv la paka konprann, eksplike yon lòt fason.`,
-          messages: historique
-        })
-      });
+        messages: historique
+      })
+    });
 
-      const data = await reponse.json();
-      const texteReponse = data.content[0].text;
-
-      historique.push({ role: 'assistant', content: texteReponse });
-      tableauReponse.setAttribute('value', texteReponse);
-
-      // Voix du professeur
-      const voix = new SpeechSynthesisUtterance(texteReponse);
-      voix.lang = 'fr-FR';
-      voix.rate = 0.9;
-      window.speechSynthesis.speak(voix);
-
-    } catch (err) {
-      tableauReponse.setAttribute('value', 'Erè koneksyon. Eseye ankò.');
-      console.error(err);
-    }
-
-    status.style.display = 'none';
-  }
-
-  // Bouton envoyer
-  document.getElementById('btn-envoyer').addEventListener('click', () => {
-    envoyerQuestion(inputQuestion.value);
-  });
-
-  // Touche Enter
-  inputQuestion.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') envoyerQuestion(inputQuestion.value);
-  });
-
-  // Microphone
-  document.getElementById('btn-micro').addEventListener('click', () => {
-    const SpeechRecognition = window.SpeechRecognition
-                           || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Mikwo pa disponib nan navigatè sa a.');
+    if (!reponse.ok) {
+      const erreur = await reponse.json();
+      console.error('Erreur API:', erreur);
+      tableauReponse.setAttribute('value',
+        'Erè: ' + (erreur.error?.message || 'Verifye kle API ou'));
+      status.style.display = 'none';
       return;
     }
-    const recog = new SpeechRecognition();
-    recog.lang = 'fr-FR';
-    recog.start();
-    document.getElementById('btn-micro').textContent = '🔴';
-    recog.onresult = (e) => {
-      const texte = e.results[0][0].transcript;
-      inputQuestion.value = texte;
-      envoyerQuestion(texte);
-    };
-    recog.onend = () => {
-      document.getElementById('btn-micro').textContent = '🎤';
-    };
-  });
+
+    const data = await reponse.json();
+    const texteReponse = data.content[0].text;
+
+    historique.push({ role: 'assistant', content: texteReponse });
+    tableauReponse.setAttribute('value', texteReponse);
+
+    // Voix du professeur
+    window.speechSynthesis.cancel();
+    const voix = new SpeechSynthesisUtterance(texteReponse);
+    voix.lang = 'fr-FR';
+    voix.rate = 0.9;
+    voix.pitch = 1;
+    window.speechSynthesis.speak(voix);
+
+  } catch (err) {
+    console.error('Erreur réseau:', err);
+    tableauReponse.setAttribute('value',
+      'Erè rezo: ' + err.message);
+  }
+
+  status.style.display = 'none';
+}
+
+document.getElementById('btn-envoyer').addEventListener('click', () => {
+  envoyerQuestion(inputQuestion.value);
+});
+
+inputQuestion.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') envoyerQuestion(inputQuestion.value);
+});
+
+document.getElementById('btn-micro').addEventListener('click', () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    alert('Mikwo pa disponib. Itilize Chrome oswa Chromium.');
+    return;
+  }
+  const recog = new SR();
+  recog.lang = 'fr-FR';
+  recog.start();
+  document.getElementById('btn-micro').textContent = '🔴';
+  recog.onresult = (e) => {
+    const texte = e.results[0][0].transcript;
+    inputQuestion.value = texte;
+    envoyerQuestion(texte);
+  };
+  recog.onend = () => {
+    document.getElementById('btn-micro').textContent = '🎤';
+  };
+});
 </script>
 
 </body>
